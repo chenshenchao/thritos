@@ -34,19 +34,19 @@ start:
     mov sp, 0x7C00
 
     call clear_screen
-    call print_hello
+    call print_bool
 
 ; 加载扇区
 load_boot:
     ;lahf
     ;and ah, 0xFE
     ;sahf
-    mov ax, 0x0820
+    mov ax, 0x0820  ; 加载到段 0x0820 段下
     mov es, ax
     mov bx, 0x0000
     mov ch, 0x00    ;柱面 0
     mov dh, 0x00    ;磁头 0
-    mov cl, 0x01    ;扇区 2
+    mov cl, 0x02    ;扇区 2
 
     mov ah, 0x02    ;读盘
     mov al, 0x10    ;扇区数 16
@@ -55,7 +55,7 @@ load_boot:
     jnc mbr_end
     call print_number
 mbr_end:
-    jmp $
+    jmp word 0x8200 ; 0x0820 :0x0000
 
 ;清屏
 clear_screen:
@@ -68,7 +68,7 @@ clear_screen:
 
 ;打印数字
 print_number:
-    mov bx, number
+    mov bx, message_number
     mov al, ah
     and al, 0x0F
     shr ah, 0x04
@@ -79,7 +79,7 @@ print_number:
 
     mov ax, cs
     mov es, ax
-    mov ax, number
+    mov ax, message_number
     mov bp, ax; es:bp
 
     mov cx, 0x08
@@ -89,14 +89,14 @@ print_number:
     mov dl, 0x00
     int 0x10
     ret
-number:
+message_number:
     times 8 db " "
 
 ;打印
-print_hello:
+print_bool:
     mov ax, cs
     mov es, ax
-    mov ax, message
+    mov ax, message_boot
     mov bp, ax; es:bp
 
     mov cx, 0x07
@@ -107,8 +107,9 @@ print_hello:
     int 0x10
     ret
 ;存储信息
-message:
+message_boot:
     db "boot..."
+
 ;补零
     times 510 - ($ - $$) db 0
     db 0x55, 0xAA
