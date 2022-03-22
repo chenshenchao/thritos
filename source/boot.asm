@@ -1,4 +1,4 @@
-%include "source/define.asm"
+%include "source/conf.asm"
 
 ;section mbr vstart=0x7C00
     org 0x7C00

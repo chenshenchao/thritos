@@ -9,7 +9,7 @@ vpath %.asm source
 vpath %.asm source/kernel
 vpath %.bin target
 
-all: boot.bin loader.bin kernel.bin
+all: boot.bin init.bin kernel.bin
 	cat $^ >> $(TARGET)mbr
 target:
 	mkdir $(TARGET)
@@ -17,7 +17,7 @@ target:
 $(TARGET)boot.bin: boot.asm
 	nasm $^ -o $@
 
-$(TARGET)loader.bin: loader.asm
+$(TARGET)init.bin: init.asm
 	nasm $^ -o $@
 
 $(TARGET)kernel.bin: main.o io.o

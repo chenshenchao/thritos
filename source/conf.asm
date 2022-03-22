@@ -4,8 +4,8 @@
 VGA_CYLS    equ 0x0FF0; 设定启动区
 VGA_LEDS    equ 0x0FF1; 
 VGA_MODE    equ 0x0FF2; 颜色位数
-VGA_SCRNX   equ 0x0FF4; 分辨率X
-VGA_SCRNY   equ 0x0FF6; 分辨率Y
+VGA_SCRN_W   equ 0x0FF4; 分辨率宽
+VGA_SCRN_H   equ 0x0FF6; 分辨率高
 VGA_VRAM    equ 0x0FF8; 图像缓冲地址
 
 ;
