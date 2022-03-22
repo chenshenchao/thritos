@@ -20,10 +20,13 @@ $(TARGET)boot.bin: boot.asm
 $(TARGET)init.bin: init.asm
 	nasm $^ -o $@
 
-$(TARGET)kernel.bin: main.o io.o
+$(TARGET)kernel.bin: main.o io.o ram.o
 	ld $^ -Ttext 0x30400 -m elf_i386 -s -o $@
 
 $(TARGET)io.o: io.asm
+	nasm $^ -f elf -o $@
+
+$(TARGET)ram.o: ram.asm
 	nasm $^ -f elf -o $@
 
 $(TARGET)main.o: main.c

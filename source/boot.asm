@@ -26,6 +26,7 @@
     db "FAT16   "   ;文件系统类型
 
 start:
+    ; 初始化栈
     mov ax, cs
     mov ds, ax
     mov es, ax

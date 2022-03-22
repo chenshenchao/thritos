@@ -8,6 +8,10 @@ VGA_SCRN_W   equ 0x0FF4; 分辨率宽
 VGA_SCRN_H   equ 0x0FF6; 分辨率高
 VGA_VRAM    equ 0x0FF8; 图像缓冲地址
 
+K_INIT_ADDR equ 0x8200 ; 内核加载器其实地址
+
+K_BUF_ADDR   equ 0x8400 ; 内核文件读入内存的地址，加载 load 的时候随后被加载进去
+
 ;
 ; 描述符类型
 ;
