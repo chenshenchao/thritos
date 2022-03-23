@@ -35,6 +35,8 @@ GDT_PTR:
     dw GDT_LIMIT
     dd GDT_START
 
+SELECTOR_CODE equ GDT_CODE_DESC - GDT_START
+
 into_protect_begin:
     mov ax, cs
     mov ds, ax
@@ -78,12 +80,26 @@ into_protect_begin:
     ; 打开中断
     ; sti
 
+    mov ah, 15
+    mov ecx, 0xA0000
+    mov ebx, 0xAFFFF
+s_15:
+    mov [ecx], ah
+    inc ecx
+    test ecx, ebx
+    jne s_15
+
+    mov ah, 10
+    mov ecx, 0xA0002
+    mov [ecx], ah
+
 ; loop:
 ;     hlt
 ;     jmp loop
 
     ; 跳入内核
-    jmp K_START
+    ; jmp dword SELECTOR_CODE:0 ;K_START
+    jmp dword K_START
 
 ; 通过 elf 结构找到 main 函数地址并执行
 load_elf_c:

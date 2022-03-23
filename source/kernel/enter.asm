@@ -1,9 +1,13 @@
 global _start
 
-; extern main
+extern main
 
 _start:
-    ; call main
+    mov ah, 10
+    mov ecx, 0xA0000
+    mov [ecx], ah
+
+    call main
     
     ; mov ebx, 0
     ; mov eax, 1
