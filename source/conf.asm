@@ -8,9 +8,18 @@ VGA_SCRN_W   equ 0x0FF4; 分辨率宽
 VGA_SCRN_H   equ 0x0FF6; 分辨率高
 VGA_VRAM    equ 0x0FF8; 图像缓冲地址
 
-K_INIT_ADDR equ 0x8200 ; 内核加载器其实地址
+K_INIT_ADDR     equ 0x8200 ; 内核加载器 地址
+K_BUF_ADDR      equ 0x8400 ; 内核文件读入内存的地址，加载 load 的时候随后被加载进去
+K_START         equ 0x30400; 内核入口
+K_LENGTH        equ 0x7FFF; 内核代码长度
 
-K_BUF_ADDR   equ 0x8400 ; 内核文件读入内存的地址，加载 load 的时候随后被加载进去
+%macro def_descriptor 3
+    dw %2 & 0xFFFF; 段界限1 (低 16bit)
+    dw %1 & 0xFFFF; 段基址1 (低 16bit)
+    db (%1 >> 16) & 0xFF; 段基址2 (中 8bit)
+    dw ((%2 >> 8) & 0xF00) | (%3 & 0xF0FF); 属性1（G,D/B,L,AVL） + 段界限2(高 4bit) + 属性2(P,DPL,S,TYPE)
+    db (%1 >> 24) & 0xFF; 段基址3 (高 8bit)
+%endmacro
 
 ;
 ; 描述符类型

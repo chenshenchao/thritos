@@ -15,17 +15,75 @@
 
     call init_vga
 
-    ; 进入保护模式
-    call into_protect
-
-    ; 加载并跳入内核
+    ; 加载内核
     call load_elf_c
-    jmp 0x30400
 
 ; 进入保护模式
 into_protect:
     ; TODO
-    ret
+    jmp into_protect_begin
+GDT_START:
+    ;               基址        界限        属性
+    def_descriptor 0x00000000, 0x00000000, 0x00000000; 
+GDT_CODE_DESC: ;代码段
+    def_descriptor K_START, K_LENGTH, DA_C + DA_32;
+GDT_VIDEO_DESC: ; 显存
+    def_descriptor 0x000B8000, 0x0000FFFF, DA_DRW
+GDT_SIZE equ $ - GDT_START
+GDT_LIMIT equ GDT_SIZE - 1
+GDT_PTR:
+    dw GDT_LIMIT
+    dd GDT_START
+
+into_protect_begin:
+    mov ax, cs
+    mov ds, ax
+    mov es, ax
+    mov ss, ax
+    mov sp, 0x100
+
+    ; 代码段描述符初始化
+    xor eax, eax
+    mov ax, cs
+    shl eax, 4
+    add eax, K_START
+    mov word [GDT_CODE_DESC + 2], ax
+    shr eax, 16
+    mov byte [GDT_CODE_DESC + 4], al
+    mov byte [GDT_CODE_DESC + 7], ah
+
+    ; 获取 GDT 内存地址
+    xor eax, eax
+    mov ax, ds
+    shl eax, 4
+    add eax, GDT_START
+    mov dword [GDT_PTR + 2], eax;
+
+    ; 加载 GDT
+    lgdt [GDT_PTR]
+
+    ; 打开地址线 A20
+    in al, 0x92
+    or al, 0b00000010
+    out 0x92, al
+
+    ; 关闭中断
+    cli
+
+    ; 进入保护模式
+    mov eax, cr0
+    or eax, 1
+    mov cr0, eax
+
+    ; 打开中断
+    ; sti
+
+; loop:
+;     hlt
+;     jmp loop
+
+    ; 跳入内核
+    jmp K_START
 
 ; 通过 elf 结构找到 main 函数地址并执行
 load_elf_c:
@@ -57,8 +115,8 @@ copy_memory:
     push esi
     push edi
     push ecx
-    mov edi,[esp+ 0x04 * 0x04]; source
-    mov esi,[esp+ 0x04 * 0x05]; target
+    mov edi,[esp+ 0x04 * 0x04]; target
+    mov esi,[esp+ 0x04 * 0x05]; source
     mov ecx,[esp+ 0x04 * 0x06]; count
 copy_memory_loop:
     cmp ecx, 0
