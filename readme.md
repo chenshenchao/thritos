@@ -28,6 +28,16 @@ set architecture i8086
 # 设置汇编风格为 intel
 set disassembly-flavor intel
 
+# 显示界面
+layout
+
+layout src #显示源代码窗口
+layout asm #显示汇编窗口
+layout regs #显示源代码/汇编和寄存器窗口
+layout split #显示源代码和汇编窗口
+layout next #显示下一个layout
+layout prev #显示上一个layout
+
 # 设置断电 启示内存
 b *0x7c00
 
