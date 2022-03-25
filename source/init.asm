@@ -11,13 +11,7 @@
     mov fs, ax
     mov sp, K_INIT_ADDR
 
-    ; ; 加载内核
-    ; call load_elf_c
-
-    call print_load
-
     call init_vga
-
 
 ; 进入保护模式
 into_protect:
@@ -30,6 +24,10 @@ GDT_CODE_DESC: ;代码段
     def_descriptor K_START, K_LENGTH, DA_C + DA_32;
 GDT_VIDEO_DESC: ; 显存
     def_descriptor 0x000B8000, 0x0000FFFF, DA_DRW
+GDT_RAW_DESC:
+    def_descriptor 0x00000100, 0x00009000, DA_DRW
+GDT_VGA_DESC:
+    def_descriptor 0x000A0000, 0X000AFFFF, DA_DRW
 GDT_SIZE equ $ - GDT_START
 GDT_LIMIT equ GDT_SIZE - 1
 GDT_PTR:
@@ -94,64 +92,8 @@ s_15:
     mov ecx, 0xA0010
     mov [ecx], ah
 
-; loop:
-;     hlt
-;     jmp loop
-
-    ; 加载内核
-    call load_elf_c
-
-    ; 跳入内核
-    ; jmp dword SELECTOR_CODE:0 ;K_START
-    jmp dword K_START
-
-; 通过 elf 结构找到 main 函数地址并执行
-load_elf_c:
-    xor esi, dword esi
-    xor ecx, dword ecx
-    mov cx, word [K_BUF_ADDR + 0x2C]; e_phnum
-    mov esi, dword [K_BUF_ADDR + 0X1C] ; e_phoff
-    add esi, dword K_BUF_ADDR; K_BUF_ADD + e_phoff
-load_elf_c_begin:
-    mov eax, dword [esi + 0]
-    cmp eax, dword 0
-    je load_elf_c_no_action; 等于 0 说明无用段
-    
-    push dword [esi + 0x08];
-    mov eax, dword [esi + 0x04];
-    add eax, dword K_BUF_ADDR;
-    push dword eax ;
-    push dword [esi + 0x10];
-    call copy_memory
-    add esp, dword 12
-load_elf_c_no_action:
-    add esi, dword 0x00000020;
-    dec dword ecx
-    jnz load_elf_c_begin
-    ret
-
-; 内存复制
-copy_memory:
-    push dword esi
-    push dword edi
-    push dword ecx
-    mov edi, dword [esp+ 0x04 * 0x04]; target
-    mov esi, dword [esp+ 0x04 * 0x05]; source
-    mov ecx, dword [esp+ 0x04 * 0x06]; count
-copy_memory_loop:
-    cmp ecx, dword 0
-    jz copy_memory_end
-    mov byte al, byte [ds:esi]
-    inc dword esi
-    mov byte [es:edi], byte al
-    inc dword edi
-    loop copy_memory_loop
-copy_memory_end:
-    mov eax, dword [esp + 0x04 * 0x04]
-    pop dword ecx
-    pop dword edi
-    pop dword esi
-    ret
+    ; 跳入加载器
+    jmp dword K_LOAD_ADDR
 
 init_vga:
     mov al, 0x13; VGA 320x200x8bit
@@ -166,24 +108,6 @@ init_vga:
     int 0x16 ; 键盘 BIOS
     mov [VGA_LEDS], al
     ret
-
-;打印
-print_load:
-    mov ax, cs
-    mov es, ax
-    mov ax, message_load
-    mov bp, ax; es:bp
-
-    mov cx, 0x07
-    mov ax, 0x1301
-    mov bx, 0x0002
-    mov dh, 0x00
-    mov dl, 0x00
-    int 0x10
-    ret
-;存储信息
-message_load:
-    db "load..."
 
 ;补零
     times 512 - ($ - $$) db 0
