@@ -21,7 +21,7 @@ $(TARGET)init.bin: init.asm
 	nasm $^ -o $@
 
 $(TARGET)kernel.bin: enter.o main.o io.o ram.o
-	ld $^ -Ttext 0x30400 -m elf_i386 -s -o $@
+	ld $^ -Ttext 0xC000 -m elf_i386 -s -o $@
 
 $(TARGET)enter.o: enter.asm
 	nasm $^ -f elf -o $@

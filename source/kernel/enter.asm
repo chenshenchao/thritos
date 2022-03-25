@@ -3,8 +3,8 @@ global _start
 extern main
 
 _start:
-    mov ah, 10
-    mov ecx, 0xA0000
+    mov ah, 6
+    mov ecx, 0xA0001
     mov [ecx], ah
 
     call main

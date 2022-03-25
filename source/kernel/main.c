@@ -4,7 +4,7 @@
 void main()
 {
     for (int i = 0xA0000;i <= 0xAFFFF; ++i){
-        ram_write(i, 15);
+        ram_write(i, 6);
     }
 // loop:
 //     io_hlt();

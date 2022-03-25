@@ -11,12 +11,13 @@
     mov fs, ax
     mov sp, K_INIT_ADDR
 
+    ; ; 加载内核
+    ; call load_elf_c
+
     call print_load
 
     call init_vga
 
-    ; ; 加载内核
-    ; call load_elf_c
 
 ; 进入保护模式
 into_protect:
@@ -90,64 +91,67 @@ s_15:
     jne s_15
 
     mov ah, 10
-    mov ecx, 0xA0002
+    mov ecx, 0xA0010
     mov [ecx], ah
 
 ; loop:
 ;     hlt
 ;     jmp loop
 
+    ; 加载内核
+    call load_elf_c
+
     ; 跳入内核
     ; jmp dword SELECTOR_CODE:0 ;K_START
     jmp dword K_START
 
-; ; 通过 elf 结构找到 main 函数地址并执行
-; load_elf_c:
-;     xor esi, esi
-;     xor ecx, ecx
-;     mov cx, word[K_BUF_ADDR + 0x2C]; e_phnum
-;     mov esi, [K_BUF_ADDR + 0X1C] ; e_phoff
-;     add esi, K_BUF_ADDR; K_BUF_ADD + e_phoff
-; load_elf_c_begin:
-;     mov eax, [esi + 0]
-;     cmp eax, 0
-;     je load_elf_c_no_action; 等于 0 说明无用段
+; 通过 elf 结构找到 main 函数地址并执行
+load_elf_c:
+    xor esi, dword esi
+    xor ecx, dword ecx
+    mov cx, word [K_BUF_ADDR + 0x2C]; e_phnum
+    mov esi, dword [K_BUF_ADDR + 0X1C] ; e_phoff
+    add esi, dword K_BUF_ADDR; K_BUF_ADD + e_phoff
+load_elf_c_begin:
+    mov eax, dword [esi + 0]
+    cmp eax, dword 0
+    je load_elf_c_no_action; 等于 0 说明无用段
     
-;     push dword [esi + 0x10];
-;     mov eax, [esi + 0x04];
-;     add eax, K_BUF_ADDR;
-;     push eax;
-;     push dword[esi + 0x08];
-;     call copy_memory
-;     add esp, 12
-; load_elf_c_no_action:
-;     add esi, 0x20;
-;     dec ecx
-;     jnz load_elf_c_begin
-;     ret
+    push dword [esi + 0x08];
+    mov eax, dword [esi + 0x04];
+    add eax, dword K_BUF_ADDR;
+    push dword eax ;
+    push dword [esi + 0x10];
+    call copy_memory
+    add esp, dword 12
+load_elf_c_no_action:
+    add esi, dword 0x00000020;
+    dec dword ecx
+    jnz load_elf_c_begin
+    ret
 
-; ; 内存复制
-; copy_memory:
-;     push esi
-;     push edi
-;     push ecx
-;     mov edi,[esp+ 0x04 * 0x04]; target
-;     mov esi,[esp+ 0x04 * 0x05]; source
-;     mov ecx,[esp+ 0x04 * 0x06]; count
-; copy_memory_loop:
-;     cmp ecx, 0
-;     jz copy_memory_end
-;     mov al, [ds:esi]
-;     inc esi
-;     mov [es:edi], al
-;     inc edi
-;     loop copy_memory_loop
-; copy_memory_end:
-;     mov eax, [esp + 0x04 * 0x04]
-;     pop ecx
-;     pop edi
-;     pop esi
-;     ret
+; 内存复制
+copy_memory:
+    push dword esi
+    push dword edi
+    push dword ecx
+    mov edi, dword [esp+ 0x04 * 0x04]; target
+    mov esi, dword [esp+ 0x04 * 0x05]; source
+    mov ecx, dword [esp+ 0x04 * 0x06]; count
+copy_memory_loop:
+    cmp ecx, dword 0
+    jz copy_memory_end
+    mov byte al, byte [ds:esi]
+    inc dword esi
+    mov byte [es:edi], byte al
+    inc dword edi
+    loop copy_memory_loop
+copy_memory_end:
+    mov eax, dword [esp + 0x04 * 0x04]
+    pop dword ecx
+    pop dword edi
+    pop dword esi
+    ret
 
 init_vga:
     mov al, 0x13; VGA 320x200x8bit
