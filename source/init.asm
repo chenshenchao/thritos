@@ -79,7 +79,7 @@ into_protect_begin:
     ; 打开中断
     ; sti
 
-    mov ah, 15
+    mov ah, 12
     mov ecx, 0xA0000
     mov ebx, 0xAFFFF
 s_15:

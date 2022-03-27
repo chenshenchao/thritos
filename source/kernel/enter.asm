@@ -3,18 +3,20 @@ global _start
 extern main
 
 _start:
-    mov ah, 6
-    mov ecx, 0xA0001
-    mov [ecx], ah
+        mov ah, 15
+        mov ecx, 0xA0000
+        mov ebx, 0xAFFFF
+    s_15:
+        mov [ecx], ah
+        inc ecx
+        test ecx, ebx
+        jne s_15
 
     call main
     
-    ; mov ebx, 0
-    ; mov eax, 1
-    ; int 0x80
-    ; mov ecx, 0xA0000
-    ; mov al, 15
-    ; mov [ecx], al
+    mov ah, 10
+    mov ecx, 0xA0002
+    mov [ecx], ah
 loop:
     hlt
     jmp loop

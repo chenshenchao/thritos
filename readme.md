@@ -23,7 +23,7 @@ gdb
 # 由于 wsl 所以通过 cat /etc/resolv.conf 查到宿主地址
 target remote 172.30.80.1:1234
 
-gdb -ex "target remote 172.30.80.1:1234" -ex "set architecture i8086" -ex "set disassembly-flavor intel" -ex "layout regs" -ex "b *0x8400" -ex "c"
+gdb -ex "target remote 172.30.80.1:1234" -ex "set architecture i8086" -ex "set disassembly-flavor intel" -ex "layout regs" -ex "b *0xC000" -ex "c"
 
 # 设置架构
 set architecture i8086
