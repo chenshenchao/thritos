@@ -27,7 +27,7 @@ GDT_VIDEO_DESC: ; 显存
 GDT_RAW_DESC:
     def_descriptor 0x00000100, 0x0000B800, DA_DRW ; 100 - B900
 GDT_VGA_DESC:
-    def_descriptor 0x000A0000, 0X000AFFFF, DA_DRW; A0000 - AFFFF VGA
+    def_descriptor 0x000A0000, 0X0000FFFF, DA_DRW; A0000 - AFFFF VGA
 GDT_SIZE equ $ - GDT_START
 GDT_LIMIT equ GDT_SIZE - 1
 GDT_PTR:
@@ -73,7 +73,7 @@ into_protect_begin:
 
     ; 进入保护模式
     mov eax, cr0
-    or eax, 1
+    or eax, 0b00000001
     mov cr0, eax
 
     ; 打开中断
