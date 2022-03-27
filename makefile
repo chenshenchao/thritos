@@ -23,8 +23,8 @@ $(TARGET)init.bin: init.asm
 $(TARGET)load.bin: load.asm
 	nasm $^ -o $@
 
-$(TARGET)kernel.bin: main.o io.o ram.o
-	ld $^ -Ttext 0xC000 -e main -m elf_i386 -s -o $@
+$(TARGET)kernel.bin: enter.o main.o io.o ram.o
+	ld $^ -Ttext 0xC000 -e _start -m elf_i386 -s -o $@
 
 $(TARGET)enter.o: enter.asm
 	nasm $^ -f elf -o $@
