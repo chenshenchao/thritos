@@ -50,7 +50,7 @@ load_boot:
     mov cl, 0x02    ;扇区 2
 
     mov ah, 0x02    ;读盘
-    mov al, 0x10    ;扇区数 16
+    mov al, 0x20    ;扇区数 32
     mov dl, 0x80    ;驱动器：软盘 0x00-0x7F；硬盘 0x80-0xFF
     int 0x13        ;调用磁盘程序
     jnc mbr_end

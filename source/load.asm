@@ -2,7 +2,24 @@
 
 ;
     org K_LOAD_ADDR
-    ; xor eax, eax
+    mov ax, cs
+    mov ds, ax
+    mov es, ax
+    mov sp, K_LOAD_ADDR
+
+    ; mov ah, 10
+    ; mov ecx, 0xC000
+    ; mov [ecx], ah
+
+    ; mov ah, 10
+    ; mov ecx, 0xC001
+    ; mov [ecx], ah
+
+    ; mov ah, 10
+    ; mov ecx, 0xC002
+    ; mov [ecx], ah
+
+    ;hlt
 
     call load_elf_c
 
@@ -16,15 +33,15 @@ load_elf_c:
     mov esi, dword [K_BUF_ADDR + 0X1C] ; e_phoff
     add esi, dword K_BUF_ADDR; K_BUF_ADD + e_phoff
 load_elf_c_begin:
-    mov eax, dword [esi + 0]
+    mov eax, dword [esi]
     cmp eax, dword 0
     je load_elf_c_no_action; 等于 0 说明无用段
     
-    push dword [esi + 0x08];
-    mov eax, dword [esi + 0x04];
-    add eax, dword K_BUF_ADDR;
-    push dword eax ;
-    push dword [esi + 0x10];
+    push dword [esi + 0x08] ; target
+    mov eax, dword [esi + 0x04] ; offset
+    add eax, dword K_BUF_ADDR ; start
+    push dword eax ; source = start + offset
+    push dword [esi + 0x10]; ; count
     call copy_memory
     add esp, dword 12
 load_elf_c_no_action:
@@ -38,9 +55,13 @@ copy_memory:
     push dword esi
     push dword edi
     push dword ecx
-    mov edi, dword [esp+ 0x04 * 0x03]; target
-    mov esi, dword [esp+ 0x04 * 0x04]; source
-    mov ecx, dword [esp+ 0x04 * 0x05]; count
+    ; push dword ebx
+    mov esi, esp
+    mov ecx, dword [esi + (0x04 * 0x03 + 2)]; count
+    mov eax, dword [esi + (0x04 * 0x05 + 2)]; target + call 压栈
+    mov edi, eax ;
+    mov eax, dword [esi + (0x04 * 0x04 + 2)]; source
+    mov esi, eax
 copy_memory_loop:
     cmp ecx, dword 0
     jz copy_memory_end
@@ -50,7 +71,9 @@ copy_memory_loop:
     inc dword edi
     loop copy_memory_loop
 copy_memory_end:
-    mov eax, dword [esp + 0x04 * 0x03]
+    mov esi, esp
+    mov eax, dword [esi + 0x04 * 0x03 + 2]
+    ; pop dword ebx
     pop dword ecx
     pop dword edi
     pop dword esi

@@ -21,13 +21,13 @@ GDT_START:
     ;               基址        界限        属性
     def_descriptor 0x00000000, 0x00000000, 0x00000000; 
 GDT_CODE_DESC: ;代码段
-    def_descriptor K_START, K_LENGTH, DA_C + DA_32;
+    def_descriptor K_START, K_LENGTH, DA_C + DA_32; C000 - D000
 GDT_VIDEO_DESC: ; 显存
-    def_descriptor 0x000B8000, 0x0000FFFF, DA_DRW
+    def_descriptor 0x000B8000, 0x0000FFFF, DA_DRW ; B8000 - C8000
 GDT_RAW_DESC:
-    def_descriptor 0x00000100, 0x00009000, DA_DRW
+    def_descriptor 0x00000100, 0x0000B800, DA_DRW ; 100 - B900
 GDT_VGA_DESC:
-    def_descriptor 0x000A0000, 0X000AFFFF, DA_DRW
+    def_descriptor 0x000A0000, 0X000AFFFF, DA_DRW; A0000 - AFFFF VGA
 GDT_SIZE equ $ - GDT_START
 GDT_LIMIT equ GDT_SIZE - 1
 GDT_PTR:
@@ -91,6 +91,8 @@ s_15:
     mov ah, 10
     mov ecx, 0xA0010
     mov [ecx], ah
+
+    ;hlt
 
     ; 跳入加载器
     jmp dword K_LOAD_ADDR

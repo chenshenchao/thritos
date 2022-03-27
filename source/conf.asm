@@ -10,7 +10,7 @@ VGA_VRAM    equ 0x0FF8; 图像缓冲地址
 
 K_INIT_ADDR     equ 0x8200 ; 初始化 地址
 K_LOAD_ADDR     equ 0x8400 ; 加载器 地址
-K_BUF_ADDR      equ 0x8600 ; 内核文件读入内存的地址
+K_BUF_ADDR      equ 0x00008600 ; 内核文件读入内存的地址
 K_START         equ 0xC000; 内核入口
 K_LENGTH        equ 0x7FFF; 内核代码长度
 

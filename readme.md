@@ -19,8 +19,11 @@ qemu-system-i386 -drive file=target/mbr,format=raw,index=0,media=disk -L E:\qemu
 qemu-system-i386 -drive file=target/mbr,format=raw,index=0,media=disk -L E:\qemu -gdb tcp::1234 -S
 
 gdb
+
 # 由于 wsl 所以通过 cat /etc/resolv.conf 查到宿主地址
-target remote 172.19.80.1:1234
+target remote 172.30.80.1:1234
+
+gdb -ex "target remote 172.30.80.1:1234" -ex "set architecture i8086" -ex "set disassembly-flavor intel" -ex "layout regs" -ex "b *0x8400" -ex "c"
 
 # 设置架构
 set architecture i8086
