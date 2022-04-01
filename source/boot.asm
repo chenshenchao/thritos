@@ -56,8 +56,7 @@ load_boot:
     jnc mbr_end
 mbr_end:
     ; 加载内核
-    ; call load_elf_c
-    jmp word 0x8200 ; 0x0820 :0x0000
+    jmp word K_LOAD_ADDR ;
 
 ;清屏
 clear_screen:

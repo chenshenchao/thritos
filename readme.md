@@ -21,9 +21,9 @@ qemu-system-i386 -drive file=target/mbr,format=raw,index=0,media=disk -L E:\qemu
 gdb
 
 # 由于 wsl 所以通过 cat /etc/resolv.conf 查到宿主地址
-target remote 172.30.80.1:1234
+target remote 172.21.144.1:1234
 
-gdb -ex "target remote 172.30.80.1:1234" -ex "set architecture i8086" -ex "set disassembly-flavor intel" -ex "layout regs" -ex "b *0xC000" -ex "c"
+gdb -ex "target remote 172.21.144.1:1234" -ex "set architecture i8086" -ex "set disassembly-flavor intel" -ex "layout regs" -ex "b *0x8400" -ex "b *0x8200" -ex "b *0xC000" -ex "c"
 
 # 设置架构
 set architecture i8086
@@ -49,6 +49,9 @@ b *0x8200
 
 # 查看断点情况
 info b
+
+# 删除 info b 看到的序号是 1 的断点
+d 1
 
 ni # next instruction
 si # step instruction

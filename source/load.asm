@@ -7,23 +7,9 @@
     mov es, ax
     mov sp, K_LOAD_ADDR
 
-    ; mov ah, 10
-    ; mov ecx, 0xC000
-    ; mov [ecx], ah
-
-    ; mov ah, 10
-    ; mov ecx, 0xC001
-    ; mov [ecx], ah
-
-    ; mov ah, 10
-    ; mov ecx, 0xC002
-    ; mov [ecx], ah
-
-    ;hlt
-
     call load_elf_c
 
-    jmp dword K_START
+    jmp dword K_INIT_ADDR
 
 ; 通过 elf 结构找到 main 函数地址并执行
 load_elf_c:

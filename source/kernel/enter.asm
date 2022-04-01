@@ -3,8 +3,12 @@ global _start
 extern main
 
 _start:
-        mov ax, 3
-        mov cs, ax
+        xor ecx, ecx
+        mov ax, ds
+        and ax, 0b111
+        or ax, 0x0020 ; 4 << 3 + 0
+        mov ds, ax
+
         mov ah, 15
         mov ecx, 0x0000
         mov ebx, 0xFFFF
@@ -13,6 +17,8 @@ _start:
         inc ecx
         test ecx, ebx
         jne s_15
+
+    sti
 
     call main
     

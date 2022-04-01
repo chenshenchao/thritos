@@ -13,6 +13,20 @@
 
     call init_vga
 
+    ; 改变屏幕颜色
+    mov ah, 12
+    mov ecx, 0xA0000
+    mov ebx, 0xAFFFF
+s_15:
+    mov [ecx], ah
+    inc ecx
+    test ecx, ebx
+    jne s_15
+
+    mov ah, 10
+    mov ecx, 0xA0010
+    mov [ecx], ah
+
 ; 进入保护模式
 into_protect:
     ; TODO
@@ -79,23 +93,8 @@ into_protect_begin:
     ; 打开中断
     ; sti
 
-    mov ah, 12
-    mov ecx, 0xA0000
-    mov ebx, 0xAFFFF
-s_15:
-    mov [ecx], ah
-    inc ecx
-    test ecx, ebx
-    jne s_15
-
-    mov ah, 10
-    mov ecx, 0xA0010
-    mov [ecx], ah
-
-    ;hlt
-
-    ; 跳入加载器
-    jmp dword K_LOAD_ADDR
+    ; 跳入内核
+    jmp dword K_START
 
 init_vga:
     mov al, 0x13; VGA 320x200x8bit
